@@ -40,6 +40,7 @@ function processData(input) {
             console.log(0);
         } else {
             let distance = distanceFunction(combinations[i], graph);
+            console.log(distance);
         }
     }
 
@@ -140,9 +141,9 @@ function distanceFunction(combinations, array){
         let tree = new Tree();
         tree = graphToTree(array, array[1], tree);
         
-        displayTree(tree);
+        // console.log(combinations);
         
-        console.log("\n");
+        // console.log("\n");
         
         distance += combinations[i][0] * combinations[i][1] * dist(combinations[i][0], combinations[i][1], tree);
     }
@@ -154,55 +155,37 @@ function distanceFunction(combinations, array){
 
 function dist(u, v, tree){
     
-    console.log("\n");
-    
-    displayTree(getParent(1, tree));
-    
-    console.log("\n");
-
-    return 0;
-    
-}
-
-function isChildren(parent, children, tree){
-
-    let parent_node = getParent(parent, tree);
-
-    if (parent_node == null){
-        return false;
-    } else {
-     
-        for (let i = 0; i < parent_node.length; i++){
-            if (parent_node.children[i] == children){
-                return true;
-            }
-        }
-
-        return false;
-        
-    }
-
-}
-
-function getParent(parent, tree){
+    // console.log("u: " + u + " v: " + v);
     
     if (tree == null){
-        return null;
+        return 0;
     } else {
-        
-        if (tree.root == parent){
-            return tree;
+        if (tree.root == null){
+            return 0;
         } else {
-            
-            for (let i = 0; i < tree.children.length; i++){
-                return getParent(parent, tree.children[i]);
-            }
-
-        }
+            if (u != tree.root && v != tree.root){
+                return dist(u, tree.root) + dist(tree.root, v);
+            } else {
+                // check if u is a child node of v or v is a child node of u
+                let u_index = getNode(u, tree.children);
+                let v_index = getNode(v, tree.children);
         
+                if (u_index != -1 && v_index != -1){
+                    return dist(u, tree.children[u_index].root) + dist(tree.children[v_index].root, v);
+                } else if (u_index != -1){
+                    return dist(u, tree.children[u_index].root);
+                } else if (v_index != -1){
+                    return dist(tree.children[v_index].root, v);
+                } else {
+                    return 1;
+                }
+            }
+        }
     }
-
+    
 }
+
+
 
 function countNodes(graph, node){
     let count = 0;
